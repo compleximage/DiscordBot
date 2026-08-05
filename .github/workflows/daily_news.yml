@@ -3,7 +3,7 @@ name: Daily AI News Bot
 on:
   schedule:
     # UTC時刻で指定（JST 07:00 は UTC 22:00 前日）
-    - cron: '0 22 * * *'
+    - cron: '15 22 * * *'
   workflow_dispatch: # 手動実行ボタンを有効化
 
 jobs:
