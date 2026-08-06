@@ -32,14 +32,15 @@ URL: {link}
 
 簡潔でわかりやすく、親しみやすい日本語で作成してください。
 """
+        # 正しいモデル名: gemini-2.0-flash
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=prompt,
         )
         return response.text
     except Exception as e:
         print(f"Gemini API Error: {e}")
-        return f"要約の生成に失敗しました。（{e}）"
+        return "要約の生成に失敗しました。"
 
 def send_to_discord(entries):
     if not entries:
@@ -66,11 +67,7 @@ def send_to_discord(entries):
         "embeds": embeds
     }
 
-    response = requests.post(WEBHOOK_URL, json=payload)
-    if response.status_code in [200, 204]:
-        print("Discordへの送信に成功しました。")
-    else:
-        print(f"送信失敗: {response.status_code}, {response.text}")
+    requests.post(WEBHOOK_URL, json=payload)
 
 if __name__ == "__main__":
     if not WEBHOOK_URL or not GEMINI_API_KEY:
