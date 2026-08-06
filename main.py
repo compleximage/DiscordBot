@@ -27,11 +27,10 @@ def scrape_article_text(url):
         res = requests.get(url, headers=headers, timeout=5)
         if res.status_code == 200:
             soup = BeautifulSoup(res.text, "html.parser")
-            # 不要なタグを除去
             for element in soup(["script", "style", "nav", "header", "footer"]):
                 element.decompose()
             text = soup.get_text(separator=" ", strip=True)
-            return text[:2000] # トークン節約のため先頭2000文字
+            return text[:2000]
     except Exception as e:
         print(f"Scraping warning: {e}")
     return ""
@@ -41,7 +40,6 @@ def generate_deep_briefing(title, link):
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
         
-        # 本文スクレイピング
         article_text = scrape_article_text(link)
         
         prompt = f"""
@@ -66,19 +64,22 @@ URL: {link}
 }}
 """
 
-        # 【機能③】Google Search Grounding（Web検索連携）を有効化
+        # Google Search Grounding（Web検索連携）を有効化
         config = types.GenerateContentConfig(
             tools=[{"google_search": {}}],
-            response_mime_type="application/json",  # 【機能②】JSON Mode指定
+            response_mime_type="application/json",
         )
 
+        # モデルを gemini-3.5-flash に指定
         response = client.models.generate_content(
-            model='gemini-3.6-flash',
+            model='gemini-3.5-flash',
             contents=prompt,
             config=config,
         )
         
-        # JSONレスポンスのクレンジング
+        if not response or not response.text:
+            raise ValueError("Gemini API returned empty response")
+
         text = response.text.strip()
         if text.startswith("```json"):
             text = text[7:]
@@ -104,10 +105,9 @@ def send_to_discord(entries):
         data = generate_deep_briefing(title, link)
 
         if data:
-            # 重要度を★マークに変換
             try:
                 score = int(data.get("importance", 3))
-            except ValueError:
+            except (ValueError, TypeError):
                 score = 3
             stars = "★" * score + "☆" * (5 - score)
 
@@ -127,7 +127,6 @@ def send_to_discord(entries):
                 "color": 3447003
             }
         else:
-            # エラー時のフォールバック表示
             embed = {
                 "title": title,
                 "url": link,
