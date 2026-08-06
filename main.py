@@ -34,7 +34,7 @@ URL: {link}
 """
         # 正しい最新モデル名: gemini-2.0-flash
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-3.6-flash',
             contents=prompt,
         )
         return response.text
