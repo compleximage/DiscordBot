@@ -32,15 +32,14 @@ URL: {link}
 
 簡潔でわかりやすく、親しみやすい日本語で作成してください。
 """
-        # モデル名を gemini-2.0-flash に変更
         response = client.models.generate_content(
-            model='gemini-1.5-flash',
+            model='gemini-2.5-flash',
             contents=prompt,
         )
         return response.text
     except Exception as e:
         print(f"Gemini API Error: {e}")
-        return "要約の生成に失敗しました。"
+        return f"要約の生成に失敗しました。（{e}）"
 
 def send_to_discord(entries):
     if not entries:
