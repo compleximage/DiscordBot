@@ -7,7 +7,6 @@ from google import genai
 WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-# 直近24時間のAIニュースを取得
 QUERY = "(人工知能 OR AI OR ChatGPT OR Claude OR LLM) when:1d"
 encoded_query = urllib.parse.quote(QUERY)
 RSS_URL = f"https://news.google.com/rss/search?q={encoded_query}&hl=ja&gl=JP&ceid=JP:ja"
@@ -33,8 +32,9 @@ URL: {link}
 
 簡潔でわかりやすく、親しみやすい日本語で作成してください。
 """
+        # モデル名を gemini-2.0-flash に変更
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=prompt,
         )
         return response.text
@@ -52,14 +52,13 @@ def send_to_discord(entries):
         title = entry.title
         link = entry.link
         
-        # GeminiでAI要約・トークポイントを生成
         ai_analysis = generate_summary_and_topic(title, link)
 
         embed = {
             "title": title,
             "url": link,
             "description": ai_analysis,
-            "color": 3447003  # 青色
+            "color": 3447003
         }
         embeds.append(embed)
 
