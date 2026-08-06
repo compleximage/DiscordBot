@@ -32,9 +32,9 @@ URL: {link}
 
 簡潔でわかりやすく、親しみやすい日本語で作成してください。
 """
-        # 有料プランで高速・高精度な gemini-2.5-flash を指定
+        # 正しい最新モデル名: gemini-2.0-flash
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=prompt,
         )
         return response.text
