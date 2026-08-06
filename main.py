@@ -2,14 +2,10 @@ import os
 import urllib.parse
 import feedparser
 import requests
-import google.generativeai as genai
+from google import genai
 
 WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-
-# APIキーの初期化
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
 
 QUERY = "(人工知能 OR AI OR ChatGPT OR Claude OR LLM) when:1d"
 encoded_query = urllib.parse.quote(QUERY)
@@ -22,7 +18,7 @@ def fetch_ai_news():
 def generate_summary_and_topic(title, link):
     """Gemini APIを使ってニュースの要約と朝のトークポイントを生成"""
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        client = genai.Client(api_key=GEMINI_API_KEY)
         
         prompt = f"""
 以下のAIニュースについて、毎朝のチーム共有会で発表・議論するためのブリーフィングを作成してください。
@@ -36,11 +32,14 @@ URL: {link}
 
 簡潔でわかりやすく、親しみやすい日本語で作成してください。
 """
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+        )
         return response.text
     except Exception as e:
         print(f"Gemini API Error: {e}")
-        return "要約の生成に失敗しました。"
+        return f"要約の生成に失敗しました。（{e}）"
 
 def send_to_discord(entries):
     if not entries:
