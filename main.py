@@ -34,7 +34,7 @@ URL: {link}
 """
         # モデル名を gemini-2.0-flash に変更
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-1.5-flash',
             contents=prompt,
         )
         return response.text
