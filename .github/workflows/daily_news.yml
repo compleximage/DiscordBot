@@ -3,7 +3,7 @@ name: Daily AI News Bot
 on:
   schedule:
     # 日本時間 朝7:15（UTC 22:15 前日）
-    - cron: '15 22 * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
